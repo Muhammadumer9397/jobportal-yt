@@ -1,59 +1,93 @@
-import React, { useEffect, useState } from 'react'
-import { RadioGroup, RadioGroupItem } from './ui/radio-group'
-import { Label } from './ui/label'
-import { useDispatch } from 'react-redux'
-import { setSearchedQuery } from '@/redux/jobSlice'
+import React, { useEffect, useState } from 'react';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Label } from './ui/label';
+import { useDispatch } from 'react-redux';
+import { setSearchedQuery } from '@/redux/jobSlice';
 
-const fitlerData = [
+const filterData = [
     {
-        fitlerType: "Location",
-        array: ["Delhi NCR", "Bangalore", "Hyderabad", "Pune", "Mumbai"]
+        filterType: "Location",
+        array: [
+            "United States", "United Kingdom", "Canada",
+            "Germany", "Australia", "Dubai", "Singapore"
+        ]
     },
     {
-        fitlerType: "Industry",
-        array: ["Frontend Developer", "Backend Developer", "FullStack Developer"]
+        filterType: "Job Role",
+        array: [
+            "Frontend Developer", "Backend Developer",
+            "Full Stack Developer", "DevOps Engineer", "Data Scientist"
+        ]
     },
     {
-        fitlerType: "Salary",
-        array: ["0-40k", "42-1lakh", "1lakh to 5lakh"]
+        filterType: "Salary (USD)",
+        array: [
+            "$0 - $2,000", "$2,000 - $5,000",
+            "$5,000 - $10,000", "$10,000+"
+        ]
     },
-]
+];
 
 const FilterCard = () => {
     const [selectedValue, setSelectedValue] = useState('');
     const dispatch = useDispatch();
+
     const changeHandler = (value) => {
         setSelectedValue(value);
-    }
-    useEffect(()=>{
-        dispatch(setSearchedQuery(selectedValue));
-    },[selectedValue]);
-    return (
-        <div className='w-full bg-white p-3 rounded-md'>
-            <h1 className='font-bold text-lg'>Filter Jobs</h1>
-            <hr className='mt-3' />
-            <RadioGroup value={selectedValue} onValueChange={changeHandler}>
-                {
-                    fitlerData.map((data, index) => (
-                        <div>
-                            <h1 className='font-bold text-lg'>{data.fitlerType}</h1>
-                            {
-                                data.array.map((item, idx) => {
-                                    const itemId = `id${index}-${idx}`
-                                    return (
-                                        <div className='flex items-center space-x-2 my-2'>
-                                            <RadioGroupItem value={item} id={itemId} />
-                                            <Label htmlFor={itemId}>{item}</Label>
-                                        </div>
-                                    )
-                                })
-                            }
-                        </div>
-                    ))
-                }
-            </RadioGroup>
-        </div>
-    )
-}
+    };
 
-export default FilterCard
+    useEffect(() => {
+        dispatch(setSearchedQuery(selectedValue));
+    }, [selectedValue]);
+
+    return (
+        <div className="w-full bg-white p-6 rounded-xl shadow-md border space-y-6">
+            <div>
+                <h1 className="font-bold text-xl text-gray-800">Filter Jobs</h1>
+                <p className="text-sm text-gray-500">Choose location, role, or salary</p>
+            </div>
+
+            <RadioGroup value={selectedValue} onValueChange={changeHandler}>
+
+                {filterData.map((data, index) => (
+                    <div key={index} className="space-y-3">
+                        <h2 className="font-semibold text-lg text-[#6A38C2]">{data.filterType}</h2>
+
+                        {/* ⭐ ROW-WISE CHIP STYLING ⭐ */}
+                        <div className="flex flex-wrap gap-3">
+                            {data.array.map((item, idx) => {
+                                const id = `id${index}-${idx}`;
+                                return (
+                                    <label
+                                        key={id}
+                                        htmlFor={id}
+                                        className={`
+                                            flex items-center gap-2 px-4 py-2 border rounded-full cursor-pointer
+                                            transition shadow-sm
+                                            hover:bg-[#f4eeff] hover:border-[#6A38C2]
+                                            ${selectedValue === item 
+                                                ? "bg-[#6A38C2] text-white border-[#6A38C2]" 
+                                                : "bg-white text-gray-700"}
+                                        `}
+                                    >
+                                        <RadioGroupItem
+                                            value={item}
+                                            id={id}
+                                            className="hidden"
+                                        />
+                                        {item}
+                                    </label>
+                                );
+                            })}
+                        </div>
+
+                    </div>
+                ))}
+
+            </RadioGroup>
+
+        </div>
+    );
+};
+
+export default FilterCard;

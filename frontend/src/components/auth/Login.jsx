@@ -18,7 +18,7 @@ const Login = () => {
         password: "",
         role: "",
     });
-    const { loading,user } = useSelector(store => store.auth);
+    const { loading, user } = useSelector(store => store.auth);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -31,9 +31,7 @@ const Login = () => {
         try {
             dispatch(setLoading(true));
             const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 withCredentials: true,
             });
             if (res.data.success) {
@@ -42,46 +40,52 @@ const Login = () => {
                 toast.success(res.data.message);
             }
         } catch (error) {
-            console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || error.message);
         } finally {
             dispatch(setLoading(false));
         }
     }
-    useEffect(()=>{
-        if(user){
-            navigate("/");
-        }
-    },[])
-    return (
-        <div>
-            <Navbar />
-            <div className='flex items-center justify-center max-w-7xl mx-auto'>
-                <form onSubmit={submitHandler} className='w-1/2 border border-gray-200 rounded-md p-4 my-10'>
-                    <h1 className='font-bold text-xl mb-5'>Login</h1>
-                    <div className='my-2'>
-                        <Label>Email</Label>
-                        <Input
-                            type="email"
-                            value={input.email}
-                            name="email"
-                            onChange={changeEventHandler}
-                            placeholder="patel@gmail.com"
-                        />
-                    </div>
 
-                    <div className='my-2'>
-                        <Label>Password</Label>
-                        <Input
-                            type="password"
-                            value={input.password}
-                            name="password"
-                            onChange={changeEventHandler}
-                            placeholder="patel@gmail.com"
-                        />
+    useEffect(() => {
+        if(user) navigate("/");
+    }, [user])
+
+    return (
+        <div className="min-h-screen bg-blue-50">
+            <Navbar />
+            <div className="flex justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-10 space-y-6">
+                    <div className="text-center">
+                        <h1 className="text-4xl font-extrabold text-gray-900 mb-2">Login</h1>
+                        <p className="text-sm text-gray-500">Welcome back! Please login to your account</p>
                     </div>
-                    <div className='flex items-center justify-between'>
-                        <RadioGroup className="flex items-center gap-4 my-5">
+                    <form onSubmit={submitHandler} className="space-y-5">
+                        {/* Email */}
+                        <div>
+                            <Label className="font-medium text-gray-700">Email</Label>
+                            <Input
+                                type="email"
+                                value={input.email}
+                                name="email"
+                                onChange={changeEventHandler}
+                                placeholder="john@example.com"
+                                className="mt-1 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        {/* Password */}
+                        <div>
+                            <Label className="font-medium text-gray-700">Password</Label>
+                            <Input
+                                type="password"
+                                value={input.password}
+                                name="password"
+                                onChange={changeEventHandler}
+                                placeholder="••••••••"
+                                className="mt-1 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        {/* Role Selection */}
+                        <RadioGroup className="flex gap-6 my-3">
                             <div className="flex items-center space-x-2">
                                 <Input
                                     type="radio"
@@ -90,6 +94,7 @@ const Login = () => {
                                     checked={input.role === 'student'}
                                     onChange={changeEventHandler}
                                     className="cursor-pointer"
+                                    id="r1"
                                 />
                                 <Label htmlFor="r1">Student</Label>
                             </div>
@@ -101,16 +106,24 @@ const Login = () => {
                                     checked={input.role === 'recruiter'}
                                     onChange={changeEventHandler}
                                     className="cursor-pointer"
+                                    id="r2"
                                 />
                                 <Label htmlFor="r2">Recruiter</Label>
                             </div>
                         </RadioGroup>
-                    </div>
-                    {
-                        loading ? <Button className="w-full my-4"> <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Please wait </Button> : <Button type="submit" className="w-full my-4">Login</Button>
-                    }
-                    <span className='text-sm'>Don't have an account? <Link to="/signup" className='text-blue-600'>Signup</Link></span>
-                </form>
+                        {/* Submit Button */}
+                        <Button
+                            type="submit"
+                            className="w-full mt-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white flex justify-center items-center rounded-xl py-3 text-lg font-medium"
+                        >
+                            {loading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                            {loading ? "Please wait" : "Login"}
+                        </Button>
+                        <p className="text-sm text-center text-gray-500">
+                            Don't have an account? <Link to="/signup" className="text-blue-600 hover:underline">Signup</Link>
+                        </p>
+                    </form>
+                </div>
             </div>
         </div>
     )
